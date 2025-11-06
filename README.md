@@ -1,7 +1,7 @@
-# RFID-Based Room Access Control System
+# Academic Room Management System
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Arduino-green.svg)]()
+[![Platform](https://img.shields.io/badge/platform-Web%20%26%20Mobile-green.svg)]()
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![Version](https://img.shields.io/badge/version-1.0.0-orange.svg)]()
 
@@ -9,31 +9,62 @@
 
 ## Overview
 
-The **RFID-Based Room Access Control System** is a security solution designed to regulate and monitor access to a restricted area using RFID (Radio Frequency Identification) technology. Each authorized user is provided with an RFID tag that grants entry when scanned by the system. Unauthorized tags trigger a denial response, ensuring secure and reliable access management.
+The **Academic Room Management System** is a web and mobile application designed to streamline and secure the management of university classrooms.  
+It enables authorized users (Admin, Professors, and Supervisors) to manage room schedules, reservations, and access permissions efficiently.
 
-This project demonstrates how embedded systems and IoT concepts can be integrated to enhance physical security through automation.
+This system integrates **biometric (fingerprint) authentication** for professors, ensuring that only authorized personnel can access assigned rooms, thereby improving both **security** and **resource utilization**.
 
 ---
 
 ## Features
 
-- Secure room access using RFID authentication  
-- Real-time access validation and control  
-- LCD feedback display for user interaction  
-- LED and buzzer indicators for access status  
-- Modular code structure for easy updates and scalability  
-- Optional database or IoT integration for logging access events  
+- **User Authentication and Role Management**  
+  Secure login system with role-based permissions:  
+  - **Admin:** Full control over users, rooms, and schedules.  
+  - **Professor:** Can view and reserve assigned rooms; room access requires fingerprint verification.  
+  - **Supervisor:** Can monitor room usage, validate access logs, and manage alerts.  
+
+- **Biometric Access Control**  
+  Professors can enter assigned rooms only through fingerprint authentication.  
+  Rooms are automatically locked for other users.
+
+- **Room Assignment**  
+  Each room (“salle”) is assigned to a specific professor. Admins can reassign rooms as needed.
+
+- **Scheduling and Reservations**  
+  Simple and conflict-free reservation system for classes, labs, or meetings.
+
+- **Real-Time Room Status**  
+  Displays whether rooms are free, reserved, occupied, or under maintenance.
+
+- **Notifications and Logs**  
+  Generates access reports, alerts for unauthorized attempts, and system logs for auditing.
 
 ---
 
 ## System Architecture
 
-The system consists of the following key components:
+1. **Frontend (Flutter):**  
+   - Cross-platform interface for web and mobile devices.  
+   - Responsive dashboard for all roles.  
 
-1. **RFID Reader (RC522):** Reads unique tag IDs.  
-2. **Arduino Microcontroller:** Processes input data and controls outputs.  
-3. **LED & Buzzer:** Provide visual and audible access status feedback.  
-4. **Relay (optional):** Controls door locking mechanism.  
-5. **LCD Display:** Displays messages such as "Access Granted" or "Access Denied."  
-6. **Power Supply:** Provides regulated voltage to the system components.
+2. **Backend (Firebase & Supabase):**  
+   - Handles authentication, data storage, and access logic.  
+   - Integrates with biometric (fingerprint) modules for secure access.  
 
+3. **Database (Firestore):**  
+   - Stores users, rooms, reservations, and access history.  
+
+4. **Security Layer:**  
+   - Role-based access control (RBAC).  
+   - Fingerprint verification for professors.  
+   - Password policy enforcing strong credentials.  
+
+---
+
+## Installation and Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/<your-username>/academic-room-management.git
+   cd academic-room-management
