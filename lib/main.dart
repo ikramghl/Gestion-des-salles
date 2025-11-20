@@ -28,7 +28,7 @@ class SalleManagerApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      // La page initiale sera LoginPage
+
       initialRoute: '/',
       routes: {
         '/': (context) => const LoginPage(), // page de login

@@ -5,7 +5,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const CustomAppBar({super.key, required this.title});
 
-  // Fenêtre pour changer le mot de passe (simulée)
+
   void _showChangePasswordDialog(BuildContext context) {
     final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
@@ -51,9 +51,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  // Fenêtre d'informations utilisateur (simulée)
+  // user info
   void _showUserInfoDialog(BuildContext context) {
-    const userEmail = "utilisateur@exemple.com";
+    const userEmail = "amina@exemple.com";
     const role = "Administrateur";
 
     showDialog(
@@ -94,7 +94,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(title, style: const TextStyle(color: Colors.white)),
       backgroundColor:Colors.blue[900],
       actions: [
-        // Icône profil
+
         PopupMenuButton<String>(
           icon: const Icon(Icons.account_circle, color: Colors.white),
           onSelected: (value) {
@@ -123,7 +123,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ),
 
-        // Déconnexion (simulée)
+        // logout
         IconButton(
           icon: const Icon(Icons.logout, color: Colors.white),
           tooltip: 'Se déconnecter',

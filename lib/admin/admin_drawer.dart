@@ -30,7 +30,7 @@ class _AdminDrawerState extends State<AdminDrawer> {
         children: [
           const SizedBox(height: 20),
 
-          // --- Dashboard ---
+         //dashboard
           _drawerItem(
             Icons.dashboard,
             'Tableau de bord',
@@ -44,7 +44,6 @@ class _AdminDrawerState extends State<AdminDrawer> {
             widget.selectedMenu == 'Tableau de bord',
           ),
 
-          // --- Gestion des salles ---
           _drawerItem(
             Icons.meeting_room,
             'Salles',
@@ -58,7 +57,7 @@ class _AdminDrawerState extends State<AdminDrawer> {
             widget.selectedMenu == 'Salles',
           ),
 
-          // --- Emploi du temps ---
+          // Emploi du temps
           _drawerItem(
             Icons.calendar_month,
             'Emploi du temps',
@@ -72,7 +71,7 @@ class _AdminDrawerState extends State<AdminDrawer> {
             widget.selectedMenu == 'Emploi du temps',
           ),
 
-          // --- Gestion des utilisateurs ---
+          // User
           _drawerItem(
             Icons.people,
             'Utilisateurs',
@@ -86,7 +85,7 @@ class _AdminDrawerState extends State<AdminDrawer> {
             widget.selectedMenu == 'Utilisateurs',
           ),
 
-          // --- Permissions ---
+          //Permissions
          /* _drawerItem(
             Icons.security,
             'Permissions',
@@ -104,7 +103,7 @@ class _AdminDrawerState extends State<AdminDrawer> {
     );
   }
 
-  // --- Fonction de création d’un item de menu principal ---
+
   Widget _drawerItem(
       IconData icon, String title, VoidCallback onTap, bool isSelected) {
     return Container(

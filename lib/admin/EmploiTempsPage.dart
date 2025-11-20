@@ -25,13 +25,11 @@ class _EmploiTempsPageState extends State<EmploiTempsPage> {
 
   String getJourActuel() => jours[DateTime.now().weekday - 1];
 
-  // --- WIDGET D'AFFICHAGE STYLISÉ ET COMPACT ---
   Widget _activityCard(Map<String, dynamic> cours) {
     Color primaryColor = Colors.indigo;
     Color backgroundColor = Colors.indigo.shade50;
     IconData icon = Icons.event_note;
 
-    // Logique de couleur/icône basée sur l'activité
     String activite = cours['activite']?.toString().toLowerCase() ?? '';
     if (activite.contains('tp')) {
       primaryColor = Colors.teal;
@@ -66,7 +64,7 @@ class _EmploiTempsPageState extends State<EmploiTempsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // Ligne 1 : Salle & Activité (mise en valeur)
+
             Row(
               children: [
                 Icon(Icons.meeting_room, size: 16, color: primaryColor),
@@ -127,15 +125,15 @@ class _EmploiTempsPageState extends State<EmploiTempsPage> {
       ),
     );
   }
-  // -------------------------------------------------------------------
+
 
   @override
   Widget build(BuildContext context) {
     final jourActuel = getJourActuel();
-    // Déterminer le nombre de colonnes pour la GridView basé sur la largeur disponible
+
     final screenWidth = MediaQuery.of(context).size.width;
-    // On suppose qu'après le drawer, il reste beaucoup d'espace (ex: 800px)
-    final crossAxisCount = screenWidth > 900 ? 3 : 2; // 3 colonnes si l'écran est large, 2 sinon.
+
+    final crossAxisCount = screenWidth > 900 ? 3 : 2;
 
     return Scaffold(
       appBar: const CustomAppBar(title: "Emploi du Temps"),
@@ -226,7 +224,7 @@ class _EmploiTempsPageState extends State<EmploiTempsPage> {
                                   const NeverScrollableScrollPhysics(),
                                   gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: crossAxisCount, // Utilisation de 2 ou 3 colonnes
+                                    crossAxisCount: crossAxisCount,
                                     childAspectRatio: 2.5,
                                     crossAxisSpacing: 10,
                                     mainAxisSpacing: 10,
@@ -254,16 +252,11 @@ class _EmploiTempsPageState extends State<EmploiTempsPage> {
     );
   }
 
-  /// -----------------------------------------------
-  /// BOITE D'AJOUT D'EMPLOI (Non modifiée)
-  /// -----------------------------------------------
-  /// -----------------------------------------------
-  /// BOITE D'AJOUT D'EMPLOI (Modifiée pour spécialités multiples)
-  /// -----------------------------------------------
+
   void _openAddEmploiDialog() {
     final _formKey = GlobalKey<FormState>();
     String jour = jours[0];
-    // NOTE: Ce champ va maintenant contenir une chaîne de spécialités séparées par des virgules
+    int jourIndex = jours.indexOf(jour) + 1;
     String specialitesInput = '';
     String salle = '';
     String prof = '';
@@ -289,14 +282,15 @@ class _EmploiTempsPageState extends State<EmploiTempsPage> {
                   onChanged: (v) {
                     if (v != null) {
                       jour = v;
+                      jourIndex = jours.indexOf(jour) + 1;
                     }
                   },
                   decoration: const InputDecoration(labelText: "Jour"),
                 ),
-                // --- CHAMPS MODIFIÉ : Saisie de spécialités multiples ---
+
                 TextFormField(
                   decoration: const InputDecoration(
-                      labelText: "Spécialités (séparées par une virgule, ex: GL, RT)"),
+                      labelText: "Spécialités"),
                   validator: (v) =>
                   v!.isEmpty ? "Obligatoire (minimum une spécialité)" : null,
                   onChanged: (v) => specialitesInput = v,
@@ -336,18 +330,17 @@ class _EmploiTempsPageState extends State<EmploiTempsPage> {
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
 
-                // 1. Nettoyer et séparer les spécialités
+
                 List<String> specialitesList = specialitesInput
                     .split(',')
                     .map((s) => s.trim())
                     .where((s) => s.isNotEmpty)
                     .toList();
 
-                // 2. Créer une liste de promesses d'écriture (Future)
                 List<Future<void>> writeOperations = [];
-
-                // 3. Boucler sur chaque spécialité et créer une entrée Firestore
+                //firebaseeeee
                 for (String spec in specialitesList) {
+                  int jourIndex = jours.indexOf(jour) + 1;
                   writeOperations.add(
                     FirebaseFirestore.instance
                         .collection('emplois_temps')
@@ -355,7 +348,8 @@ class _EmploiTempsPageState extends State<EmploiTempsPage> {
                         .collection('horaires')
                         .add({
                       'jour': jour,
-                      'specialite': spec, // Stocke la spécialité actuelle
+                      'jourIndex': jourIndex,
+                      'specialite': spec,
                       'salle': salle.trim(),
                       'prof': prof.trim(),
                       'activite': activite.trim(),
@@ -364,7 +358,7 @@ class _EmploiTempsPageState extends State<EmploiTempsPage> {
                   );
                 }
 
-                // 4. Exécuter toutes les écritures en parallèle
+
                 await Future.wait(writeOperations);
 
                 Navigator.pop(context);

@@ -12,12 +12,11 @@ class GestionSallesPage extends StatefulWidget {
 
 class _GestionSallesPageState extends State<GestionSallesPage> {
   String selectedMenu = 'Salles';
-
   final TextEditingController nomController = TextEditingController();
   final List<String> statuts = ['Disponible', 'Occupée', 'Maintenance'];
   String selectedStatut = "Disponible";
 
-  // ✅ AJOUTER UNE SALLE (dialog)
+  // ✅ Boîte de dialogue pour ajouter une salle
   void _ajouterSalleDialog() {
     showDialog(
       context: context,
@@ -38,7 +37,6 @@ class _GestionSallesPageState extends State<GestionSallesPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
-
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(
                       labelText: 'Statut',
@@ -69,7 +67,6 @@ class _GestionSallesPageState extends State<GestionSallesPage> {
                       return;
                     }
 
-                    // ✅ AJOUT FIRESTORE (collection salles)
                     await FirebaseFirestore.instance.collection('salles').add({
                       'nom': nomController.text.trim(),
                       'statut': selectedStatut,
@@ -78,7 +75,6 @@ class _GestionSallesPageState extends State<GestionSallesPage> {
 
                     nomController.clear();
                     selectedStatut = "Disponible";
-
                     Navigator.pop(context);
                   },
                   child: const Text("Ajouter"),
@@ -91,11 +87,63 @@ class _GestionSallesPageState extends State<GestionSallesPage> {
     );
   }
 
-  // ✅ SUPPRIMER UNE SALLE
+  // ✅ Suppression salle
   void _supprimerSalle(String id) async {
     await FirebaseFirestore.instance.collection('salles').doc(id).delete();
   }
 
+  // ✅ Dialogue pour modifier le statut d'une salle
+  void _modifierStatutDialog(String id, String currentStatut) {
+    String nouveauStatut = currentStatut;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              title: const Text("Modifier le statut"),
+              content: DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  labelText: 'Nouveau statut',
+                  border: OutlineInputBorder(),
+                ),
+                value: nouveauStatut,
+                items: statuts
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) => setStateDialog(() => nouveauStatut = v!),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Annuler"),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await FirebaseFirestore.instance
+                        .collection('salles')
+                        .doc(id)
+                        .update({'statut': nouveauStatut});
+
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Statut mis à jour ✅")),
+                    );
+                  },
+                  child: const Text("Enregistrer"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ✅ Interface principale
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,20 +154,16 @@ class _GestionSallesPageState extends State<GestionSallesPage> {
             selectedMenu: selectedMenu,
             onSelectMenu: (m) => setState(() => selectedMenu = m),
           ),
-
-          // ✅ PAGE PRINCIPALE
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  // ✅ Titre + Bouton ajouter
                   Row(
                     children: [
                       const Text(
                         "Liste des Salles",
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                       ),
                       const Spacer(),
                       ElevatedButton.icon(
@@ -129,10 +173,7 @@ class _GestionSallesPageState extends State<GestionSallesPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 25),
-
-                  // ✅ LISTE DES SALLES EN DIRECT
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
@@ -145,7 +186,6 @@ class _GestionSallesPageState extends State<GestionSallesPage> {
                         }
 
                         final salles = snapshot.data!.docs;
-
                         if (salles.isEmpty) {
                           return const Center(
                             child: Text(
@@ -166,14 +206,24 @@ class _GestionSallesPageState extends State<GestionSallesPage> {
                                 leading: const Icon(Icons.meeting_room, size: 32),
                                 title: Text(
                                   salle['nom'],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 subtitle: Text("Statut : ${salle['statut']}"),
-
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () => _supprimerSalle(salle.id),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.edit, color: Colors.blue),
+                                      onPressed: () => _modifierStatutDialog(
+                                        salle.id,
+                                        salle['statut'],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () => _supprimerSalle(salle.id),
+                                    ),
+                                  ],
                                 ),
                               ),
                             );

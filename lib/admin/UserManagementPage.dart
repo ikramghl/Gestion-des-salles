@@ -14,12 +14,10 @@ class UserManagementPage extends StatefulWidget {
 class _UserManagementPageState extends State<UserManagementPage> {
   String selectedMenu = 'Utilisateurs';
 
-  // Référence à l'instance de Firestore
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  // Référence à l'instance d'Authentication
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // --- 1. AJOUTER UN UTILISATEUR (AUTHENTIFICATION + FIRESTORE) ---
   Future<void> _ajouterUtilisateur() async {
     final _formKey = GlobalKey<FormState>();
     TextEditingController nom = TextEditingController();
@@ -95,7 +93,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           'createdAt': FieldValue.serverTimestamp(),
                         });
 
-                        // Afficher un succès (optionnel)
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Utilisateur ajouté avec succès !')),
                         );
@@ -103,7 +101,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         Navigator.pop(context); // Fermer la boîte de dialogue
 
                       } on FirebaseAuthException catch (e) {
-                        // Gérer les erreurs d'authentification (ex: email déjà utilisé)
+
                         String message = 'Erreur d\'authentification.';
                         if (e.code == 'email-already-in-use') {
                           message = 'Cet email est déjà utilisé par un autre compte.';
@@ -137,7 +135,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  // --- 2. SUPPRIMER UN UTILISATEUR (AUTHENTICATION + FIRESTORE) ---
+
   Future<void> _supprimerUtilisateur(String userId, String userEmail) async {
     // Note: La suppression d'un compte Firebase Auth nécessite une ré-authentification
     // si l'utilisateur à supprimer n'est pas l'utilisateur actuellement connecté.
@@ -146,7 +144,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     // Pour cet exemple simple, nous allons seulement supprimer le document Firestore.
 
     try {
-      // 1. SUPPRIMER LE DOCUMENT DANS FIRESTORE
+
       await _firestore.collection('users').doc(userId).delete();
 
       // Pour la suppression d'Auth, il faudrait utiliser une Cloud Function
@@ -192,7 +190,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // --- AFFICHAGE DE LA LISTE DEPUIS FIRESTORE ---
+
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: _firestore.collection('users').snapshots(),
@@ -228,7 +226,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                 subtitle: Text('${userData['email'] ?? 'Email Inconnu'} - ${userData['role'] ?? 'Rôle Inconnu'}'),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.delete, color: Colors.red),
-                                  // Appel de la nouvelle fonction de suppression avec UID et Email
+
                                   onPressed: () => _supprimerUtilisateur(userId, userEmail),
                                 ),
                               ),
